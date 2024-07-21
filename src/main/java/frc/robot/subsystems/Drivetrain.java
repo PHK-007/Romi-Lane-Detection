@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.sensors.IMUReader;
@@ -40,6 +41,11 @@ public class Drivetrain extends SubsystemBase {
         return instance;
     }
     
+
+
+    private double uL = 0.0;
+    private double uR = 0.0;
+
     
     // The Romi has the left and right motors set to
     // PWM channels 0 and 1 respectively
@@ -84,20 +90,6 @@ public class Drivetrain extends SubsystemBase {
         m_diffDrive.voltageDrive(leftVoltage, rightVoltage);
     }
     
-    public double uL;
-    public double uR;
-    /**
-    * Set voltage to left and right motors using PID speed control
-    * @param leftSpeed left target speed in m/s
-    * @param rightSpeed right target speed in m/s
-    */
-    public void velocityPIDDrive(double leftSpeed, double rightSpeed) {
-        uL = leftPID.getTargetVoltage(leftSpeed, getLeftSpeed());
-        uR = rightPID.getTargetVoltage(rightSpeed, getRightSpeed());
-        m_diffDrive.voltageDrive(uL, uR);
-        // SmartDashboard.putNumber("Left Voltage", uL);
-        // SmartDashboard.putNumber("Right Voltage", uR);
-    }
     
     
     public void resetPIDControllers() {
@@ -127,6 +119,9 @@ public class Drivetrain extends SubsystemBase {
         return m_rightEncoder.getDistance() / 2.54;
     }
     
+    public double getAverageDistanceInch() {
+        return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
+    }
     
     public double getLeftDistanceCM() {
         return m_leftEncoder.getDistance();
@@ -135,12 +130,6 @@ public class Drivetrain extends SubsystemBase {
     public double getRightDistanceCM() {
         return m_rightEncoder.getDistance();
     }
-    
-    
-    public double getAverageDistanceInch() {
-        return (getLeftDistanceInch() + getRightDistanceInch()) / 2.0;
-    }
-    
     
     public double getAverageDistanceCM() {
         return (getLeftDistanceCM() + getRightDistanceCM()) / 2.0;
@@ -168,14 +157,51 @@ public class Drivetrain extends SubsystemBase {
     
     
     // Motor Controls
-    
-    public void setLeftMotorVoltage (double voltage) {
-        m_leftMotor.setVoltage(voltage);
+
+    /**
+     * Sets the variable uL to the specified voltage
+     * @param voltage
+     */
+    public void setLeftVoltage(double voltage) {
+        uL = voltage;
     }
-    
-    public void setRightMotorVoltage (double voltage) {
-        m_rightMotor.setVoltage(voltage);
+
+
+    /**
+     * Sets the variable uR to the specified voltage
+     * @param voltage
+     */
+    public void setRightVoltage(double voltage) {
+        uR = voltage;
     }
+
+
+    public void setVelocity(double vel) {
+        setVelocity(vel, vel);
+    }
+
+
+    public void setVelocity(double left, double right) {
+        leftPID.setSetpoint(left);
+        rightPID.setSetpoint(right);
+    }
+
+    
+    /**
+     * Sets the left motor to the specified voltage
+     * @param voltage
+     */
+    // public void setLeftMotorVoltage (double voltage) {
+    //     m_leftMotor.setVoltage(voltage);
+    // }
+    
+    /**
+     * Sets the right motor to the specified voltage
+     * @param voltage
+     */
+    // public void setRightMotorVoltage (double voltage) {
+    //     m_rightMotor.setVoltage(voltage);
+    // }
     
     /**
     * Apply power to the left motor in percent output
@@ -338,11 +364,16 @@ public class Drivetrain extends SubsystemBase {
     }
     
     
-    
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         updateCurrentBearing();
         updateTurnDirection();
+
+        uL = leftPID.calculate(getLeftSpeed());
+        uR = rightPID.calculate(getRightSpeed());
+
+        m_leftMotor.setVoltage(uL);
+        m_rightMotor.setVoltage(uR);
     }
 }

@@ -70,9 +70,6 @@ public class Robot extends TimedRobot {
         SmartDashboard.putString("Current Turn Direction", Drivetrain.getInstance().getCurrentTurnDirection().toString());
         SmartDashboard.putNumber("Net Error", Drivetrain.getInstance().getNetGyroError());
         
-        // Distance Sensor
-        SmartDashboard.putBoolean("Start Auton?", DistanceSensor.getInstance().startAuton());
-        
         IMUReader.getInstance().updateAngles();
     }
     
@@ -90,10 +87,7 @@ public class Robot extends TimedRobot {
         IMUReader.getInstance().reset();
         Drivetrain.getInstance().resetGyro();
         Drivetrain.getInstance().resetEncoders();
-        DistanceSensor.getInstance().setDuringAuton(true);
         Drivetrain.getInstance().setTargetBearing(0);
-        DistanceSensor.getInstance().setStart(false);
-        firstTime = true;
         
         // Get selected routine from the SmartDashboard
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -103,9 +97,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null && DistanceSensor.getInstance().startAuton() && firstTime) {
+        if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
-            firstTime = false;
         }
     }
     
@@ -119,7 +112,7 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         
-        CommandScheduler.getInstance().schedule(new DriveDistancePID(m_speed, 50, DistanceUnits.CENTIMETERS, Drivetrain.getInstance()));
+        CommandScheduler.getInstance().schedule();
     }
     
     /** This function is called periodically during operator control. */

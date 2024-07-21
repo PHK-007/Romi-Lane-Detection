@@ -45,13 +45,15 @@ public class DriveDistancePID extends CommandBase {
         m_drive.resetEncoders();
         initTime = Timer.getFPGATimestamp();
         m_drive.resetPIDControllers();
+
+        m_drive.setVelocity(m_speed);
     }
     
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         // m_drive.arcadeDrive(m_speed, 0);
-        m_drive.velocityPIDDrive(m_speed, m_speed);
+        
     }
     
     // Called once the command ends or is interrupted.
