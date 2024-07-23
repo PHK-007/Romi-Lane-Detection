@@ -12,6 +12,8 @@ import frc.robot.sensors.IMUReader;
 import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -52,8 +54,8 @@ public class Drivetrain extends SubsystemBase {
     private final Spark m_leftMotor = new Spark(0);
     private final Spark m_rightMotor = new Spark(1);
     
-    private PIDController leftPID = new PIDController(0.04, 0.4, 0);
-    private PIDController rightPID = new PIDController(0.04, 0.4, 0);
+    private PIDController leftPID = new PIDController(0.125, 0.0, 0);
+    private PIDController rightPID = new PIDController(0.125, 0.0, 0);
     
     // The Romi has onboard encoders that are hardcoded
     // to use DIO pins 4/5 and 6/7 for the left and right
@@ -135,6 +137,12 @@ public class Drivetrain extends SubsystemBase {
         return (getLeftDistanceCM() + getRightDistanceCM()) / 2.0;
     }
     
+
+    public Command setDriveVoltage(double voltage) {
+        return Commands.parallel(setLeftVoltageCommand(voltage), setRightVoltageCommand(voltage));
+    }
+
+
     /**
     * Get the current speed of the left motor
     * 
@@ -162,8 +170,16 @@ public class Drivetrain extends SubsystemBase {
      * Sets the variable uL to the specified voltage
      * @param voltage
      */
-    public void setLeftVoltage(double voltage) {
-        uL = voltage;
+    public Command setLeftVoltageCommand(double voltage) {
+        return Commands.runOnce(() -> uL = voltage);
+    }
+
+    /**
+     * 
+     * @return The left voltage output from the PID controller: uL
+     */
+    public double getLeftVoltage() {
+        return uL;
     }
 
 
@@ -171,19 +187,29 @@ public class Drivetrain extends SubsystemBase {
      * Sets the variable uR to the specified voltage
      * @param voltage
      */
-    public void setRightVoltage(double voltage) {
-        uR = voltage;
+    public Command setRightVoltageCommand(double voltage) {
+        return Commands.runOnce(() -> uR = voltage);
+    }
+
+    /**
+     * 
+     * @return The right voltage output from the PID controller: uR 
+     */
+    public double getRightVoltage() {
+        return uR;
+    }
+
+    public Command setVelocityCommand(double vel) {
+        return setVelocityCommand(vel, vel);
     }
 
 
-    public void setVelocity(double vel) {
-        setVelocity(vel, vel);
-    }
-
-
-    public void setVelocity(double left, double right) {
-        leftPID.setSetpoint(left);
-        rightPID.setSetpoint(right);
+    public Command setVelocityCommand(double left, double right) {
+        Command seq = Commands.runOnce(() -> {
+            leftPID.setSetpoint(left);
+            rightPID.setSetpoint(right);
+        }, this);
+        return seq;
     }
 
     
@@ -362,7 +388,7 @@ public class Drivetrain extends SubsystemBase {
         }
         return (kP * Math.abs(error)) * turnDirection;
     }
-    
+
     
     @Override
     public void periodic() {
@@ -373,7 +399,9 @@ public class Drivetrain extends SubsystemBase {
         uL = leftPID.calculate(getLeftSpeed());
         uR = rightPID.calculate(getRightSpeed());
 
-        m_leftMotor.setVoltage(uL);
-        m_rightMotor.setVoltage(uR);
+        // m_leftMotor.setVoltage(uL);
+        // m_rightMotor.setVoltage(uR);
+
+        voltageDrive(uL, uR);
     }
 }

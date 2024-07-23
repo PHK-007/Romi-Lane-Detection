@@ -46,7 +46,7 @@ public class DriveDistancePID extends CommandBase {
         initTime = Timer.getFPGATimestamp();
         m_drive.resetPIDControllers();
 
-        m_drive.setVelocity(m_speed);
+        // m_drive.setVelocity(m_speed);
     }
     
     // Called every time the scheduler runs while the command is scheduled.

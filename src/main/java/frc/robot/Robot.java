@@ -65,6 +65,9 @@ public class Robot extends TimedRobot {
         
         SmartDashboard.putNumber("Left Speed", Drivetrain.getInstance().getLeftSpeed());
         SmartDashboard.putNumber("Right Speed", Drivetrain.getInstance().getRightSpeed());
+
+        SmartDashboard.putNumber("uL", Drivetrain.getInstance().getLeftVoltage());
+        SmartDashboard.putNumber("uR", Drivetrain.getInstance().getRightVoltage());
         
         
         SmartDashboard.putString("Current Turn Direction", Drivetrain.getInstance().getCurrentTurnDirection().toString());

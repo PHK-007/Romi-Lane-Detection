@@ -16,8 +16,10 @@ import frc.robot.subsystems.OnBoardIO.ChannelMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
 * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +33,9 @@ public class RobotContainer {
     private final OnBoardIO m_onboardIO = new OnBoardIO(ChannelMode.INPUT, ChannelMode.INPUT);
     
     // Assumes a gamepad plugged into channnel 0
-    private final Joystick m_controller = new Joystick(0);
+    private final Joystick m_controller = new Joystick(1);
+
+    private final CommandXboxController driver = new CommandXboxController(0);
     
     // Create SmartDashboard chooser for autonomous routines
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -52,7 +56,6 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-
         //----------------------------------------------------- A U T O N -----------------------------------------------------
         
         // Setup SmartDashboard options
@@ -70,16 +73,20 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Default command is arcade drive. This will run unless another command
         // is scheduled over it.
-        Drivetrain.getInstance().setDefaultCommand(getArcadeDriveCommand());
+        // Drivetrain.getInstance().setDefaultCommand(getArcadeDriveCommand());
         
         // Example of how to use the onboard IO
         Trigger onboardButtonA = new Trigger(m_onboardIO::getButtonAPressed);
         onboardButtonA
-        .onTrue(new PrintCommand("Button A Pressed"))
-        .onFalse(new PrintCommand("Button A Released"));
+            .onTrue(new PrintCommand("Button A Pressed"))
+            .onFalse(new PrintCommand("Button A Released"));
         
-        
-        //m_controller.getRawButton(0);
+        driver.a().onTrue(Drivetrain.getInstance().setVelocityCommand(0).alongWith(Commands.print("Pressing A")));
+        driver.b().onTrue(Drivetrain.getInstance().setVelocityCommand(5).alongWith(Commands.print("Pressing B")));
+        driver.x().onTrue(Drivetrain.getInstance().setVelocityCommand(10).alongWith(Commands.print("Pressing X")));
+        driver.y().onTrue(Drivetrain.getInstance().setVelocityCommand(15).alongWith(Commands.print("Pressing Y")));
+
+        driver.rightBumper().or(driver.leftBumper()).onTrue(Drivetrain.getInstance().setDriveVoltage(0));
     }
             
             
@@ -99,7 +106,6 @@ public class RobotContainer {
     * @return the command to run in teleop
     */
     public Command getArcadeDriveCommand() {
-        return new ArcadeDrive(
-        Drivetrain.getInstance(), () -> -m_controller.getRawAxis(1), () -> -m_controller.getRawAxis(2));
+        return new ArcadeDrive(Drivetrain.getInstance(), () -> -driver.getRawAxis(1), () -> -driver.getRawAxis(2));
     }
 }     

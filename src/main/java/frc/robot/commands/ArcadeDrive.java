@@ -21,10 +21,7 @@ public class ArcadeDrive extends CommandBase {
 	* @param xaxisSpeedSupplier Lambda supplier of forward/backward speed
 	* @param zaxisRotateSupplier Lambda supplier of rotational speed
 	*/
-	public ArcadeDrive(
-	Drivetrain drivetrain,
-	Supplier<Double> xaxisSpeedSupplier,
-	Supplier<Double> zaxisRotateSupplier) {
+	public ArcadeDrive(Drivetrain drivetrain, Supplier<Double> xaxisSpeedSupplier, Supplier<Double> zaxisRotateSupplier) {
 		m_drivetrain = drivetrain;
 		m_xaxisSpeedSupplier = xaxisSpeedSupplier;
 		m_zaxisRotateSupplier = zaxisRotateSupplier;
