@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
-import frc.robot.sensors.IMUReader;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.sensors.RomiGyro;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -316,11 +315,7 @@ public class Drivetrain extends SubsystemBase {
     public void resetGyro() {
         m_gyro.reset();
     }
-    
-    public void updateCurrentBearing() {
-        currentBearing = IMUReader.getInstance().getyaw();
-    }
-    
+
     public double getCurrentBearing() {
         return currentBearing;
     }
@@ -393,7 +388,6 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        updateCurrentBearing();
         updateTurnDirection();
 
         uL = leftPID.calculate(getLeftSpeed());

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveDistancePID;
 import frc.robot.commands.DriveDistancePID.DistanceUnits;
-import frc.robot.sensors.IMUReader;
 import frc.robot.subsystems.Drivetrain;
 
 
@@ -53,9 +52,6 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         
         
-        Drivetrain.getInstance().updateCurrentBearing();
-        
-        
         SmartDashboard.putNumber("Left Distance", Drivetrain.getInstance().getLeftDistanceCM());
         SmartDashboard.putNumber("Right Distance", Drivetrain.getInstance().getRightDistanceCM());
         
@@ -71,8 +67,6 @@ public class Robot extends TimedRobot {
         
         SmartDashboard.putString("Current Turn Direction", Drivetrain.getInstance().getCurrentTurnDirection().toString());
         SmartDashboard.putNumber("Net Error", Drivetrain.getInstance().getNetGyroError());
-        
-        IMUReader.getInstance().updateAngles();
     }
     
     /** This function is called once each time the robot enters Disabled mode. */
@@ -85,8 +79,6 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit() {
-        // Reset gyro
-        IMUReader.getInstance().reset();
         Drivetrain.getInstance().resetGyro();
         Drivetrain.getInstance().resetEncoders();
         Drivetrain.getInstance().setTargetBearing(0);
