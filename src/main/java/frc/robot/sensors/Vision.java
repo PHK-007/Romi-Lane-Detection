@@ -1,6 +1,7 @@
 package frc.robot.sensors;
 
 import edu.wpi.first.networktables.DoubleArrayEntry;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -9,12 +10,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Vision {
     
     private NetworkTable laneTable;
-    private DoubleArrayEntry x1Entry, x2Entry;
+    private DoubleArraySubscriber x1sub, x2sub;
     private NetworkTableInstance inst;
-    private DoubleArrayTopic x1Topic, x2Topic;
 
     private double[] x1, x2;
-    private double x1Mid, x2Mid;
+    private double x1Mid = -1;
+    private double x2Mid = -1;
     public final double MIDPOINT = 320.0;
     private final double[] DEFAULT_POSITION = {-1, -1};
 
@@ -30,11 +31,9 @@ public class Vision {
     public Vision() {
         inst = NetworkTableInstance.getDefault();
         laneTable = inst.getTable("LaneDet");
-        x1Topic = laneTable.getDoubleArrayTopic("X1 Topic");
-        x2Topic = laneTable.getDoubleArrayTopic("X2 Topic");
-        
-        x1Entry = x1Topic.getEntry(DEFAULT_POSITION);
-        x2Entry = x2Topic.getEntry(DEFAULT_POSITION);
+
+        x1sub = laneTable.getDoubleArrayTopic("x1").subscribe(DEFAULT_POSITION);
+        x2sub = laneTable.getDoubleArrayTopic("x2").subscribe(DEFAULT_POSITION);
 
         x1 = new double[2];
         x2 = new double[2];
@@ -42,8 +41,8 @@ public class Vision {
 
 
     public void update() {
-        x1 = x1Entry.get();
-        x2 = x2Entry.get();
+        x1 = x1sub.get();
+        x2 = x2sub.get();
 
         x1Mid = (x1[0] + x1[1]) / 2;
         x2Mid = (x2[0] + x2[1]) / 2;
