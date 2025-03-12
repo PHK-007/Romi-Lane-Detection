@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutonomousDistance;
 import frc.robot.commands.RobotTour;
+import frc.robot.commands.FollowLane;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OnBoardIO;
 import frc.robot.subsystems.OnBoardIO.ChannelMode;
@@ -60,7 +61,8 @@ public class RobotContainer {
         
         // Setup SmartDashboard options
         
-        // m_chooser.setDefaultOption("Robot Tour", new RobotTour(Drivetrain.getInstance(), 49, 0.4, 0.3, 90));
+        m_chooser.setDefaultOption("Follow Lane", new FollowLane(Drivetrain.getInstance(), 50, 8));
+        m_chooser.addOption("Robot Tour", new RobotTour(Drivetrain.getInstance(), 49, 0.4, 0.3, 90));
         SmartDashboard.putData(m_chooser);
     }
     
