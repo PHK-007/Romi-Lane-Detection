@@ -4,12 +4,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.commands.DriveDistancePID;
 import frc.robot.commands.DriveDistancePID.DistanceUnits;
+import frc.robot.sensors.Vision;
 import frc.robot.subsystems.Drivetrain;
 
 
@@ -33,6 +35,9 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        inst.startClient4("Romi Client");
+        inst.setServer("10.0.0.2", 1735);
         m_robotContainer = new RobotContainer();
     }
     
@@ -52,21 +57,26 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
         
         
-        SmartDashboard.putNumber("Left Distance", Drivetrain.getInstance().getLeftDistanceCM());
-        SmartDashboard.putNumber("Right Distance", Drivetrain.getInstance().getRightDistanceCM());
+        // SmartDashboard.putNumber("Left Distance", Drivetrain.getInstance().getLeftDistanceCM());
+        // SmartDashboard.putNumber("Right Distance", Drivetrain.getInstance().getRightDistanceCM());
         
-        SmartDashboard.putNumber("Current Bearing: ", Drivetrain.getInstance().getCurrentBearing());
-        SmartDashboard.putNumber("Target Bearing: ", Drivetrain.getInstance().getTargetBearing());
+        // SmartDashboard.putNumber("Current Bearing: ", Drivetrain.getInstance().getCurrentBearing());
+        // SmartDashboard.putNumber("Target Bearing: ", Drivetrain.getInstance().getTargetBearing());
         
-        SmartDashboard.putNumber("Left Speed", Drivetrain.getInstance().getLeftSpeed());
-        SmartDashboard.putNumber("Right Speed", Drivetrain.getInstance().getRightSpeed());
+        // SmartDashboard.putNumber("Left Speed", Drivetrain.getInstance().getLeftSpeed());
+        // SmartDashboard.putNumber("Right Speed", Drivetrain.getInstance().getRightSpeed());
 
-        SmartDashboard.putNumber("uL", Drivetrain.getInstance().getLeftVoltage());
-        SmartDashboard.putNumber("uR", Drivetrain.getInstance().getRightVoltage());
+        // SmartDashboard.putNumber("uL", Drivetrain.getInstance().getLeftVoltage());
+        // SmartDashboard.putNumber("uR", Drivetrain.getInstance().getRightVoltage());
         
         
-        SmartDashboard.putString("Current Turn Direction", Drivetrain.getInstance().getCurrentTurnDirection().toString());
-        SmartDashboard.putNumber("Net Error", Drivetrain.getInstance().getNetGyroError());
+        // SmartDashboard.putString("Current Turn Direction", Drivetrain.getInstance().getCurrentTurnDirection().toString());
+        // SmartDashboard.putNumber("Net Error", Drivetrain.getInstance().getNetGyroError());
+
+
+        Vision.getInstance().update();
+        // System.out.println("testValue from NT: " + Vision.getInstance().getMyX());
+        // SmartDashboard.putNumber("My Mysterious Number", Vision.getInstance().getLeftLaneCenter());
     }
     
     /** This function is called once each time the robot enters Disabled mode. */
@@ -105,7 +115,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        
+
         CommandScheduler.getInstance().schedule();
     }
     
