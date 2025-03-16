@@ -48,8 +48,8 @@ public class Vision {
         inst.startClient4("Romi Client");
         inst.setServer("10.0.0.2", 1735);
         inst.addConnectionListener(true, (event) -> {
-            SmartDashboard.putString("NT Connection event: remote ID", event.connInfo.remote_id);
-            SmartDashboard.putString("NT Connection event: remote IP", event.connInfo.remote_ip);
+            System.out.println("--------------NT Connection event: remote ID: " + event.connInfo.remote_id);
+            System.out.println("--------------NT Connection event: remote IP: " + event.connInfo.remote_ip);
         });
         
 
