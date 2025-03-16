@@ -45,12 +45,14 @@ public class Vision {
 
     public Vision() {
         inst = NetworkTableInstance.getDefault();
-        inst.startClient4("Romi Client");
-        inst.setServer("10.0.0.2", 1735);
-        inst.addConnectionListener(true, (event) -> {
-            System.out.println("--------------NT Connection event: remote ID: " + event.connInfo.remote_id);
-            System.out.println("--------------NT Connection event: remote IP: " + event.connInfo.remote_ip);
-        });
+        // inst.startClient4("Romi Client");
+        // inst.setServer("10.0.0.2", 1735);
+        // inst.addConnectionListener(true, (event) -> {
+        //     System.out.println("-------------------NT Connection event: remote ID: " + event.connInfo.remote_id);
+        //     System.out.println("-------------------NT Connection event: remote IP: " + event.connInfo.remote_ip);
+        // });
+
+        inst.startServer();
         
 
         laneTable = inst.getTable("LaneDet");
