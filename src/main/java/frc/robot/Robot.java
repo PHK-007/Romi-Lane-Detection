@@ -36,8 +36,11 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        inst.stopLocal();
         inst.startClient4("Romi Client");
         inst.setServer("10.0.0.2", 1735);
+        String ntServerEnv = System.getenv("NT_CORE_SERVER");
+        System.out.println("------------------------------------NT_CORE_SERVER is: " + ntServerEnv);
         m_robotContainer = new RobotContainer();
     }
     

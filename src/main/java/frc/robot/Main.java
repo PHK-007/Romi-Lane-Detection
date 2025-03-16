@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -20,6 +21,10 @@ public final class Main {
     * <p>If you change your main robot class, change the parameter type.
     */
     public static void main(String... args) {
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        inst.stopLocal();
+        inst.startClient4("Romi Client");
+        inst.setServer("10.0.0.2", 1735);
         RobotBase.startRobot(Robot::new);
     }
 }
