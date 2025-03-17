@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 
         Vision.getInstance().update();
         // System.out.println("testValue from NT: " + Vision.getInstance().getMyX());
-        // SmartDashboard.putNumber("My Mysterious Number", Vision.getInstance().getLeftLaneCenter());
+        SmartDashboard.putNumberArray("Lane Edges from Romi", Vision.getInstance().getLeftLaneEdges());
     }
     
     /** This function is called once each time the robot enters Disabled mode. */
