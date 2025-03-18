@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 // import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.sensors.RomiGyro;
+import frc.robot.sensors.Vision;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,21 +29,16 @@ public class Drivetrain extends SubsystemBase {
     
     private TurnDirection currTurnDir = TurnDirection.IDLE;
     
-    private double currentBearing = 0.0;
-    private double targetBearing = 0.0;
-    private double error = currentBearing - targetBearing;
-    private double netError = error;
-    public final double BEARING_TOLERANCE = 0.36;
+    private double error = 0;
+    public final double ERROR_TOLERANCE = 2;
     
     
     private static Drivetrain instance = null;
-    
     public static Drivetrain getInstance() {
         instance = instance == null ? new Drivetrain() : instance;
         return instance;
     }
     
-
 
     private double uL = 0.0;
     private double uR = 0.0;
@@ -86,11 +82,14 @@ public class Drivetrain extends SubsystemBase {
     public void arcadeDrive(double xaxisSpeed, double zaxisRotate) {
         m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate);
     }
+
+    public void arcadeDrive(double xaxisSpeed, double zaxisRotate, boolean squareInputs) {
+        m_diffDrive.arcadeDrive(xaxisSpeed, zaxisRotate, squareInputs);
+    }
     
     public void voltageDrive(double leftVoltage, double rightVoltage) {
         m_diffDrive.voltageDrive(leftVoltage, rightVoltage);
     }
-    
     
     
     public void resetPIDControllers() {
@@ -315,27 +314,6 @@ public class Drivetrain extends SubsystemBase {
     public void resetGyro() {
         m_gyro.reset();
     }
-
-    public double getCurrentBearing() {
-        return currentBearing;
-    }
-    
-    public double getTargetBearing() {
-        return targetBearing;
-    }
-    
-    public void setTargetBearing(double target) {
-        targetBearing = target;
-    }
-    
-    public void changeTargetBearing(double change) {
-        targetBearing += change;
-        targetBearing %= 360;
-    }
-    
-    public double getNetGyroError() {
-        return netError;
-    }
     
     public TurnDirection getCurrentTurnDirection() {
         return currTurnDir;
@@ -343,45 +321,34 @@ public class Drivetrain extends SubsystemBase {
     
     public void updateTurnDirection() {
         // Update error
-        error = targetBearing - currentBearing;
+        error = Vision.getInstance().getError();
         
-        if (error < -180) {
-            netError = error + 360;
-        } else if (error < 0) {
-            netError = Math.abs(error);
-        } else if (error > 180) {
-            netError = error - 180;
-        } else if (error > 0) {
-            netError = error;
-        }
-        
-        if (netError <= BEARING_TOLERANCE) {
+        if (Math.abs(error) <= ERROR_TOLERANCE) {
             currTurnDir = TurnDirection.IDLE;
+        } else if (error > 0) {
+            currTurnDir = TurnDirection.CLOCKWISE;
         } else {
-            if (error < -180) {
-                currTurnDir = TurnDirection.CLOCKWISE;
-            } else if (error < 0) {
-                currTurnDir = TurnDirection.COUNTER_CLOCKWISE;
-            } else if (error > 180) {
-                currTurnDir = TurnDirection.COUNTER_CLOCKWISE;
-            } else if (error > 0) {
-                currTurnDir = TurnDirection.CLOCKWISE;
-            }
+            currTurnDir = TurnDirection.COUNTER_CLOCKWISE;
         }
     }
     
     
-    public double calculateTurnSpeed (TurnDirection dir, double error) {
+    /**
+     * Calculates the turn speed using the currTurnDir and error from Drivetrain.java
+     * @return The value to be used for arcadeDrive()
+     */
+    public double calculateTurnSpeed () {
         double kP = 0.0085;
         double turnDirection;
-        if (dir == TurnDirection.CLOCKWISE) {
+        if (currTurnDir == TurnDirection.CLOCKWISE) {
             turnDirection = -1;
-        } else if (dir == TurnDirection.COUNTER_CLOCKWISE) {
+        } else if (currTurnDir == TurnDirection.COUNTER_CLOCKWISE) {
             turnDirection = 1;
         } else {
             turnDirection = 0;
         }
-        return (kP * Math.abs(error)) * turnDirection;
+        // return kP * error * -1; // This should also technically be correct but won't account for tolerance
+        return (kP * Math.abs(error)) * turnDirection; 
     }
 
     
@@ -390,12 +357,12 @@ public class Drivetrain extends SubsystemBase {
         // This method will be called once per scheduler run
         updateTurnDirection();
 
-        uL = leftPID.calculate(getLeftSpeed());
-        uR = rightPID.calculate(getRightSpeed());
+        // uL = leftPID.calculate(getLeftSpeed());
+        // uR = rightPID.calculate(getRightSpeed());
 
-        // m_leftMotor.setVoltage(uL);
-        // m_rightMotor.setVoltage(uR);
+        // // m_leftMotor.setVoltage(uL);
+        // // m_rightMotor.setVoltage(uR);
 
-        voltageDrive(uL, uR);
+        // voltageDrive(uL, uR);
     }
 }

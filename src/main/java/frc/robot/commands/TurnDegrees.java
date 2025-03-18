@@ -39,7 +39,6 @@ public class TurnDegrees extends CommandBase {
         // Set motors to stop, read encoder values for starting point
         m_drive.arcadeDrive(0, 0);
         m_drive.resetEncoders();
-        m_drive.changeTargetBearing(m_speed >= 0 ? m_degrees : -m_degrees);
         SmartDashboard.putNumber("Target Rotation", targetTurningDistance);
     }
     

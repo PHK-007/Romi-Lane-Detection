@@ -16,7 +16,10 @@ public class Vision {
     private double[] x1, x2;
     private double x1Mid = -1;
     private double x2Mid = -1;
-    private double midLine = -1;
+    /**
+     * The x position of the expectation line (updates every loop)
+     */
+    private double expectationLine = -1;
     private boolean laneDetected = false;
 
     /**
@@ -62,12 +65,12 @@ public class Vision {
         x2Mid = (x2[0] + x2[1]) / 2;
 
         if (NUMBER_OF_LANES == 1) {
-            midLine = x1Mid;
+            expectationLine = x1Mid;
         } else {
-            midLine = (x1Mid + x2Mid) / 2;
+            expectationLine = (x1Mid + x2Mid) / 2;
         }
 
-        lateralOffset = offsetFactor * (midLine - SCREEN_MIDPOINT);
+        lateralOffset = offsetFactor * (expectationLine - SCREEN_MIDPOINT);
     }
 
     private void updateVariables() {
@@ -94,7 +97,7 @@ public class Vision {
     }
 
     public double getExpectationLine() {
-        return midLine;
+        return expectationLine;
     }
 
     public double getLateralOffset() {
@@ -103,5 +106,9 @@ public class Vision {
 
     public boolean isLaneDetected() {
         return laneDetected;
+    }
+
+    public double getError() {
+        return expectationLine - SCREEN_MIDPOINT;
     }
 }
