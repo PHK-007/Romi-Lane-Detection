@@ -70,7 +70,8 @@ public class Robot extends TimedRobot {
 
         Vision.getInstance().update();
         // System.out.println("testValue from NT: " + Vision.getInstance().getMyX());
-        SmartDashboard.putNumberArray("Lane Edges from Romi", Vision.getInstance().getLeftLaneEdges());
+        SmartDashboard.putNumberArray("Left Lane Edges from Romi", Vision.getInstance().getLeftLaneEdges());
+        SmartDashboard.putNumberArray("Right Lane Edges from Romi", Vision.getInstance().getRightLaneEdges());
     }
     
     /** This function is called once each time the robot enters Disabled mode. */
@@ -88,15 +89,19 @@ public class Robot extends TimedRobot {
         
         // Get selected routine from the SmartDashboard
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.schedule();
+        }
     }
     
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.schedule();
-        }
+        // if (m_autonomousCommand != null) {
+        //     m_autonomousCommand.schedule();
+        // }
     }
     
     @Override

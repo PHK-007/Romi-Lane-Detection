@@ -29,8 +29,11 @@ public class Drivetrain extends SubsystemBase {
     
     private TurnDirection currTurnDir = TurnDirection.IDLE;
     
+    /**
+     * The difference between the middle of the screen and the middle of the lane in pixels
+     */
     private double error = 0;
-    public final double ERROR_TOLERANCE = 2;
+    public final double ERROR_TOLERANCE = 20;
     
     
     private static Drivetrain instance = null;
@@ -338,24 +341,29 @@ public class Drivetrain extends SubsystemBase {
      * @return The value to be used for arcadeDrive()
      */
     public double calculateTurnSpeed () {
-        double kP = 0.0085;
-        double turnDirection;
-        if (currTurnDir == TurnDirection.CLOCKWISE) {
+        double kP = 0.1;
+        double turnDirection = 0;
+        updateTurnDirection();
+        if (currTurnDir == TurnDirection.IDLE) {
+            turnDirection = 0;
+        }
+        else if (currTurnDir == TurnDirection.CLOCKWISE) {
             turnDirection = -1;
         } else if (currTurnDir == TurnDirection.COUNTER_CLOCKWISE) {
             turnDirection = 1;
-        } else {
-            turnDirection = 0;
         }
         // return kP * error * -1; // This should also technically be correct but won't account for tolerance
-        return (kP * Math.abs(error)) * turnDirection; 
+        // return (kP * Math.abs(error)) * turnDirection;
+        return 0.075 * (Math.log(0.01*(Math.abs(error) + 100))) * turnDirection;
     }
 
     
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        updateTurnDirection();
+        calculateTurnSpeed();
+        SmartDashboard.putNumber("Error", error);
+        SmartDashboard.putNumber("Turn Speed", calculateTurnSpeed());
 
         // uL = leftPID.calculate(getLeftSpeed());
         // uR = rightPID.calculate(getRightSpeed());

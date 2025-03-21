@@ -2,6 +2,8 @@ package frc.robot.sensors;
 
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -10,7 +12,10 @@ public class Vision {
     
     private NetworkTable laneTable;
     private DoubleArraySubscriber x1Sub, x2Sub;
-    private BooleanSubscriber detectedSub;
+    /**
+     * A GenericEntry that lets the user change the seek value from the Shuffleboard
+     */
+    private GenericEntry seekEntry;
     private NetworkTableInstance inst;
 
     private double[] x1, x2;
@@ -33,6 +38,7 @@ public class Vision {
     public static final int NUMBER_OF_LANES = 1;
     private final double offsetFactor = 1; // TODO Tune this value
     private final double[] DEFAULT_POSITION = {-1, -1};
+    private final double SEEK_DISTANCE = 0.2;
 
     private static Vision instance = null;
     public static Vision getInstance() {
@@ -50,7 +56,8 @@ public class Vision {
 
         x1Sub = laneTable.getDoubleArrayTopic("x1").subscribe(DEFAULT_POSITION);
         x2Sub = laneTable.getDoubleArrayTopic("x2").subscribe(DEFAULT_POSITION);
-        detectedSub = laneTable.getBooleanTopic("Lane Detected").subscribe(false);
+        seekEntry = laneTable.getDoubleTopic("seek_distance").getGenericEntry();
+        seekEntry.setDouble(SEEK_DISTANCE);
 
         x1 = new double[2];
         x2 = new double[2];
@@ -76,7 +83,6 @@ public class Vision {
     private void updateVariables() {
         x1 = x1Sub.get();
         x2 = x2Sub.get();
-        laneDetected = detectedSub.get();
     }
 
 
@@ -110,5 +116,13 @@ public class Vision {
 
     public double getError() {
         return expectationLine - SCREEN_MIDPOINT;
+    }
+
+    public void setSeekDistance(double dist) {
+        seekEntry.setDouble(dist);
+    }
+
+    public double getSeekDistance() {
+        return seekEntry.getDouble(-1);
     }
 }

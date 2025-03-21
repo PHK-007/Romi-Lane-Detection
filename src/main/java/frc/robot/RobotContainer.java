@@ -61,7 +61,7 @@ public class RobotContainer {
         
         // Setup SmartDashboard options
         
-        m_chooser.setDefaultOption("Follow Lane", new FollowLane(Drivetrain.getInstance(), 50, 8));
+        m_chooser.setDefaultOption("Follow Lane", new FollowLane(Drivetrain.getInstance(), 50, 0.175));
         m_chooser.addOption("Robot Tour", new RobotTour(Drivetrain.getInstance(), 49, 0.4, 0.3, 90));
         SmartDashboard.putData(m_chooser);
     }
@@ -75,7 +75,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Default command is arcade drive. This will run unless another command
         // is scheduled over it.
-        // Drivetrain.getInstance().setDefaultCommand(getArcadeDriveCommand());
+        Drivetrain.getInstance().setDefaultCommand(getArcadeDriveCommand());
         
         // Example of how to use the onboard IO
         Trigger onboardButtonA = new Trigger(m_onboardIO::getButtonAPressed);
@@ -108,6 +108,6 @@ public class RobotContainer {
     * @return the command to run in teleop
     */
     public Command getArcadeDriveCommand() {
-        return new ArcadeDrive(Drivetrain.getInstance(), () -> -driver.getRawAxis(1), () -> -driver.getRawAxis(2));
+        return new ArcadeDrive(Drivetrain.getInstance(), () -> -driver.getRawAxis(1), () -> -driver.getRawAxis(4) / 2);
     }
 }     

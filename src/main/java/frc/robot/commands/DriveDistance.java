@@ -49,8 +49,8 @@ public class DriveDistance extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // m_drive.arcadeDrive(m_speed, 0);
-        m_drive.voltageDrive(0.72, 0.72);
+        m_drive.arcadeDrive(m_speed, 0);
+        // m_drive.voltageDrive(0.72, 0.72);
         
         if (m_unit == DistanceUnits.CENTIMETERS) {
             SmartDashboard.putString("Distance", m_drive.getAverageDistanceCM() + "cm");

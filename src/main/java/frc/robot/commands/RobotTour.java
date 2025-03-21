@@ -25,9 +25,9 @@ public class RobotTour extends SequentialCommandGroup {
         * new LeftUTurn(driveSpeed, turnSpeed, turnDegree, blockLength, DistanceUnits.CENTIMETERS, drivetrain),
         */
         addCommands(
-            new DriveDistance(driveSpeed, blockLength, DistanceUnits.CENTIMETERS, drivetrain),
-            new TurnDegrees(turnSpeed, turnDegree, drivetrain),
             new DriveDistance(driveSpeed, blockLength, DistanceUnits.CENTIMETERS, drivetrain)
+            // new TurnDegrees(turnSpeed, turnDegree, drivetrain),
+            // new DriveDistance(driveSpeed, blockLength, DistanceUnits.CENTIMETERS, drivetrain)
         );
     }
 }
